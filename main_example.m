@@ -1,0 +1,76 @@
+%% example code for registering the template face to a target face
+% -target: Structure of vertices and faces of target mesh; n*3 array of xyz
+% coordinates and their connectiones
+% -mask: Structure of vertices and faces of template mesh; m*3 array of xyz
+% coordinates and their connectiones
+% registered: the vertices of the registered mask
+
+%%
+%loading the faces
+load('sym_KU.mat');
+mask=sym;
+
+%template positioning landmark IDs
+idx_mask = [1388 5773 3589 2248,4913];
+
+%centering the template
+mask.vertices = mask.vertices - repmat(mean(mask.vertices),size(mask.vertices,1),1);
+
+%loading target face
+load('example_target.mat');
+
+%target positioning landmark IDs
+idx_target =[53722;86011;84598;33876;7861];
+
+% finding the location of the positioning vertices
+poseVertices = target.vertices(idx_target,:);
+radius = get_dist(target.vertices(idx_target(3),:),target.vertices(idx_target(1),:))*1.5;
+
+%clipping the area of interest of the face using a sphere
+clipped_target= clip_sphere(target,radius,target.vertices(idx_target(3),:));
+
+%finding the new IDs of the positioning landmarks
+idx_target= knnsearch(clipped_target.vertices,poseVertices)';
+
+%% rigid registeration
+[target.vertices,~,~,~] = initial_aligning(clipped_target, mask, 1,'face', idx_target, idx_mask);
+target.faces = clipped_target.faces;
+
+target.vertices = myRigidICP(target,mask,3000,0);
+
+%non-rigid registration
+registered=myNonrigidRegistration(mask, target, 150, 'face');
+
+
+%% display the registered template
+
+TRS= triangulation(mask.faces,registered);
+figure;     
+trisurf(TRS,'FaceColor', [0.8 0.8 1.0],'edgealpha',(0));
+landmark_set=1;
+material dull
+
+grid off
+axis off
+light('Position',[0 0 1000])
+view (0,90)
+daspect([1 1 1])
+material dull
+
+%% FA calculation
+registered_vector = reshape(registered,1,3*size(registered,1));
+[calculated_FA_all,DA_face,colormapData] = calculate_FA(registered_vector,mask,'face');
+
+%% display FA
+
+TRS= triangulation(sym.faces,registered);
+figure;     
+trisurf(TRS,colormapData,'edgealpha',(0.1));
+light('Position',[0 0 1000])
+material dull
+shading interp
+caxis([0.5 4])
+colorbar
+axis off;
+view([0 90]);
+daspect([1 1 1])
