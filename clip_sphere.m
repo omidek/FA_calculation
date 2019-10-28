@@ -1,39 +1,42 @@
 function mesh=clip_sphere(mesh, radius, centeroid)
 %%cropping the mesh using a sphere
-%   by Omid Ekrami, 2018
 
-%find the points out of the sphere
-    temp = repmat(centeroid,size(mesh.vertices,1) ,1);
-    dist = get_dist(temp,mesh.vertices);
-    outside = find(dist>radius);
-    
-%fix the indices in the faces
-    reductions = zeros(size(mesh.faces));
-    for i=1:length(outside)
-        try
-            temp_idx = find(mesh.faces>outside(i) & outside(i+1)>=mesh.faces); %fixes the other faces in the mesh
-        catch
-            temp_idx = find(mesh.faces>outside(i)); %fixes the other faces in the mesh
-        end
-        reductions(temp_idx) = reductions(temp_idx)-i;
-    end
-    extra_faces = ismember(mesh.faces,outside);
-    extra_faces = sum(extra_faces,2);
-    temp_idx = find(extra_faces~=0); %finds the mutual faces
-    mesh.faces(temp_idx,:)=[]; %removes mutual faces
-    reductions(temp_idx,:)=[];
-    mesh.vertices(outside,:)=[]; %removes vertices outside the sphere
-    mesh.faces = mesh.faces+reductions;
-    unreferenced = find(~ismember(1:size(mesh.vertices,1),mesh.faces));
-    reductions2 = zeros(size(mesh.faces));
-    for i=1:length(unreferenced)
-        try
-            temp_idx = find(mesh.faces>unreferenced(i) & unreferenced(i+1)>=mesh.faces); %fixes the other faces in the mesh
-        catch
-            temp_idx = find(mesh.faces>unreferenced(i));
-        end
-        reductions2(temp_idx) = reductions2(temp_idx)-i;
-    end
-    mesh.vertices(unreferenced,:)=[]; %removes vertex2
-    mesh.faces = mesh.faces+reductions2;
+mesh_out = mesh; % copy all other fields of mesh to the output mesh_out
+v = mesh.vertices;
+f = mesh.faces;
+
+%% find the index of rows of the vertices to be deleted
+temp = repmat(centeroid,size(v,1) ,1);
+dist = get_dist(temp,v);
+outside = find(dist>radius);
+logicalRemoveVertices = ismember(1:length(v),outside); % logical vector: true for rows to be removed
+
+%%  Create new vertice reference tags
+vnew = v;
+tagsOld = 1:length(v);
+tagsNew = tagsOld; 
+newCount = cumsum(~logicalRemoveVertices); % counts the vertices that are to remain
+tagsNew(~logicalRemoveVertices) = newCount(~logicalRemoveVertices); % the newCount are the new reference tags
+tagsNew(logicalRemoveVertices) = nan; 
+
+%% Delete vertices
+vnew(logicalRemoveVertices,:) = []; 
+
+%% Delete faces
+fnew = f; 
+[IndexFacesRowDelete,~] = find(ismember(f,outside)); % finds the row index of the faces to delete
+fnew(IndexFacesRowDelete,:) = []; % deletes faces referencing the removed vertices
+
+%% Renumber faces
+fnewRenumbered = tagsNew(fnew); 
+
+%% New Patch
+mesh_out.faces = fnewRenumbered;
+mesh_out.vertices = vnew;
+
+%% Recursively call to Remove additional Vertices that are unreferenced by the removal of faces
+unreferenced = 1:length(vnew);
+unusedVerticeList = unreferenced(~ismember(unreferenced,fnewRenumbered));
+if ~isempty(unusedVerticeList)
+    mesh_out = removeVerticesPatch(mesh_out,mesh_out.vertices(unusedVerticeList,:));
 end
