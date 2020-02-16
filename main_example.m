@@ -59,7 +59,7 @@ material dull
 
 %% FA calculation
 registered_vector = reshape(registered,1,3*size(registered,1));
-[calculated_FA_all,DA_face,colormapData] = calculate_FA(registered_vector,mask,'face');
+[calculated_FA_all,DA_face,~,colormapData] = calculate_FA(registered_vector,mask,'face');
 
 %% display FA
 
