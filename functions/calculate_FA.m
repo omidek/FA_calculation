@@ -113,12 +113,13 @@ switch type
             
             %difference between the face and its reflection        
             subtraction = sqrt(sum((pro_face-ref_face).^2,2));
-            signed_diff = pro_face-ref_faces;
             %%difference between the face and its reflection corrected for DA (in case of populations)
             %subtraction = sqrt(sum((pro_face-ref_face-DA_face).^2,2));
             
             colormapData(num_face,:) = subtraction;
             face_asym(num_face) = mean(subtraction); %average FA per face
+            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA_face,*size(pro_face,1),1);
+
        end
 case 'body'
 
