@@ -3,7 +3,7 @@ load('sym_KU.mat');
 load('sample_faces.mat') % a set of 10 sample faces, synthetically made from a weighted average of real faces.
 mask=sym;
 
-%Calculating the signed difference between a face and its mirror
+%Calculating the signed difference between a face and its mirror, corrected for average DA
 [~,~,signed_diff,~] = calculate_FA(sample_faces,mask,'face'); 
 
 % the DA vector, calculated as the average of the signed differences
