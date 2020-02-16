@@ -86,7 +86,7 @@ while abs(delta_ffactor)>0.00001
 
 end
 
-%% Fix for DA
+%% Calculate DA
 switch type
     case 'face'
         colormapData = zeros(size(all_faces,1),size(all_faces,2)/3);
@@ -102,7 +102,7 @@ switch type
             DA_face =DA_face+(pro_face-ref_face);
         end
         DA_face =DA_face/size(pro_faces,1); % Directional Asymmetry
-
+        
         for num_face=1:size(pro_faces,1)
             pro_face = [pro_faces(num_face,1:size(template.vertices,1));...
                   pro_faces(num_face,size(template.vertices,1)+1:2*size(template.vertices,1));...
@@ -118,7 +118,7 @@ switch type
             
             colormapData(num_face,:) = subtraction;
             face_asym(num_face) = mean(subtraction); %average FA per face
-            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA_face,*size(pro_face,1),1);
+            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA,*size(pro_face,1),1);
 
        end
 case 'body'
