@@ -1,0 +1,8 @@
+We are unable to provide the raw data that are part of the Penn State University dataset,
+as these data are highly identifiable in nature and are in legal and ethical violation
+of the informed consent obtained from the participants. Interested and qualified researchers
+may send requests for a more confined sharing of the data to Mark D. Shriver at mds17@psu.edu. 
+3D surface images gathered at the University of Pittsburgh for the 3D Facial Norms cohort
+are available through the FaceBase Consortium (www.facebase.org) under accession number FB00000491.01,
+or at: 
+https://www.facebase.org/data/record/#1/isa: dataset/accession=FB00000491.01.
