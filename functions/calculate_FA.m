@@ -86,7 +86,6 @@ while abs(delta_ffactor)>0.00001
     old_ffactor = ffactor;
     ffactor=sum(get_dist(reference,old_reference));
     delta_ffactor = (ffactor-old_ffactor);
-
 end
 
 %% Calculate DA
