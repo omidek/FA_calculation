@@ -119,7 +119,7 @@ switch type
            
             colormapData(num_face,:) = subtraction;
             FA_values(num_face) = mean(subtraction); %average FA per face
-            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA_face,3*size(pro_face,1),1);
+            signed_diff(num_face,:) =reshape(pro_face-ref_face,3*size(pro_face,1),1);
 
        end
 case 'body'
