@@ -4,10 +4,10 @@ load('sample_faces.mat') % a set of 10 sample faces, synthetically made from a w
 mask=sym;
 
 %Calculating the signed difference between a face and its mirror
-[~,~,signed_diff,~] = calculate_FA(sample_faces,mask,'face'); 
+[~,~,TA_vectors,~] = calculate_FA(sample_faces,mask,'face'); 
 
 % the DA vector, calculated as the average of the signed differences
-DA_vector = mean(signed_diff,1); 
+DA_vector = mean(TA_vectors,1); 
 DA_direction  = DA_vector'/norm(DA_vector);
 
 % projection of the signed differences onto the DA direction and correcting for average DA;
@@ -20,7 +20,7 @@ FDA_vectors = repmat(FDA_scores,1,size(signed_diff,2)).*repmat(DA_direction',siz
 %removing the DA projection for each face from its signed difference. This
 %gives the asymmetry vector for each face, corrected for individual DA
 %effects.
-DA_residuals = signed_diff - repmat(DA_vector,size(signed_diff,1),1) - FDA_vectors;
+DA_residuals = TA_vectors - repmat(DA_vector,size(signed_diff,1),1) - FDA_vectors;
 
 %calculates the average C-FA for each face
 for i=1:size(DA_residuals,1)
