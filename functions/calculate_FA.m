@@ -1,4 +1,4 @@
-function [FA_values,DA_face,signed_diff,colormapData] = calculate_FA_test(all_faces,template,type)
+function [FA_values,DA_face,signed_diff,colormapData] = calculate_FA(all_faces,template,type)
 %Inputes
 % all_faces: contains the vertices of the already registered faces
 % each row contains one face (vector of X, vector of Y and vector of Z values)
