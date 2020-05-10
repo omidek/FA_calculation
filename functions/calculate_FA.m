@@ -1,4 +1,4 @@
-function [FA_values,DA_face,signed_diff,colormapData] = calculate_FA (all_faces,template,type)
+function [FA_values,DA_face,signed_diff,colormapData] = calculate_FA_test(all_faces,template,type)
 %Inputes
 % all_faces: contains the vertices of the already registered faces
 % each row contains one face (vector of X, vector of Y and vector of Z values)
@@ -9,8 +9,11 @@ function [FA_values,DA_face,signed_diff,colormapData] = calculate_FA (all_faces,
 %Outputs:
 %FA_values: average fluctuating asymmetry per face
 %DA_face: the directional asymmetry values per vertex
+%signed_diff: signed difference between a face and its reflection,
+%corrected for average DA
 %colormapData: fluctuating asymmetry per vertex for each face ( each row
 %contains the data for one face)
+
 
 %   by Omid Ekrami, 2018
 
@@ -90,7 +93,7 @@ end
 switch type
     case 'face'
         colormapData = zeros(size(all_faces,1),size(all_faces,2)/3);
-        signed_diff = zeros(size(pro_face));
+        signed_diff = zeros(size(all_faces));
         DA_face=0;
         for num_face=1:size(pro_faces,1)              
             pro_face = [pro_faces(num_face,1:size(template.vertices,1));...
@@ -113,17 +116,15 @@ switch type
             
             %difference between the face and its reflection        
             subtraction = sqrt(sum((pro_face-ref_face).^2,2));
-            %%difference between the face and its reflection corrected for DA (in case of populations)
-            %subtraction = sqrt(sum((pro_face-ref_face-DA_face).^2,2));
-            
+           
             colormapData(num_face,:) = subtraction;
-            face_asym(num_face) = mean(subtraction); %average FA per face
-            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA,*size(pro_face,1),1);
+            FA_values(num_face) = mean(subtraction); %average FA per face
+            signed_diff(num_face,:) =reshape(pro_face-ref_face-DA_face,3*size(pro_face,1),1);
 
        end
 case 'body'
 
 end
 
-FA_values = face_asym';
+FA_values=FA_values';
 end
