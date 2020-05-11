@@ -12,15 +12,15 @@ DA_direction  = DA_vector'/norm(DA_vector);
 
 % projection of the signed differences onto the DA direction and correcting for average DA;
 % this produces F-DA score for each face
-FDA_scores = signed_diff*DA_direction - norm(DA_vector);
+FDA_scores = TA_vectors*DA_direction - norm(DA_vector);
 
 % calculating the F-DA vectors for all faces
-FDA_vectors = repmat(FDA_scores,1,size(signed_diff,2)).*repmat(DA_direction',size(signed_diff,1),1);
+FDA_vectors = repmat(FDA_scores,1,size(TA_vectors,2)).*repmat(DA_direction',size(TA_vectors,1),1);
 
 %removing the DA projection for each face from its signed difference. This
 %gives the asymmetry vector for each face, corrected for individual DA
 %effects.
-DA_residuals = TA_vectors - repmat(DA_vector,size(signed_diff,1),1) - FDA_vectors;
+DA_residuals = TA_vectors - repmat(DA_vector,size(TA_vectors,1),1) - FDA_vectors;
 
 %calculates the average C-FA for each face
 for i=1:size(DA_residuals,1)
